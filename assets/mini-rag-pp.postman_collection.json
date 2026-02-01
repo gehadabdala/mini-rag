@@ -1,0 +1,28 @@
+{
+  "info": {
+    "_postman_id": "761ae935-1c1c-490a-aef0-0c857fe6b683",
+    "name": "mini-rag-pp",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44836248"
+  },
+  "item": [
+    {
+      "name": "welcome-request",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "api",
+      "value": "http://127.0.0.1:8000",
+      "type": "string"
+    }
+  ]
+}
