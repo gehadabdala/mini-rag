@@ -31,7 +31,7 @@ class DataController(BaseController):
                 project_path,
                   f"{random_key}_{cleaned_filename}"
                   )
-        return new_filepath
+        return new_filepath , random_key+"_"+cleaned_filename
 
     def get_clean_filename(self , orig_filename: str):
          #remove any special characters , except underscores and dots
