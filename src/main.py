@@ -1,3 +1,4 @@
+#Main Application (main.py) The entry point of the application where routers are included.
 from fastapi import FastAPI
 from routes import base
 from routes import data
