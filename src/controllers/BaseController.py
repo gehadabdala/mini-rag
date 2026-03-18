@@ -2,16 +2,18 @@ from helpers.config import get_settings, Settings
 import os
 import random
 import string
+
+
 class BaseController:
-    
-    def __init__(self, project_id:str=None):
+
+    def __init__(self, project_id: str = None, db_client=None):
         self.project_id = project_id
+        self.db_client = db_client
         self.app_settings = get_settings()
         self.base_dir = os.path.dirname(os.path.dirname(__file__))
-        self.file_dir =os.path.join(
-            self.base_dir,
-            "assets/files"
-            )
+        self.file_dir = os.path.join(self.base_dir, "assets/files")
+
     def generate_random_string(self, length: int = 12):
-        return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
-       # return set of random characters & digits len=12
+        return "".join(random.choices(string.ascii_letters + string.digits, k=length))
+
+    # return set of random characters & digits len=12
