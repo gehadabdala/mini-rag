@@ -6,3 +6,4 @@ aiofiles==23.2.1
 langchain==1.2.10
 PyMuPDF
 motor==3.6.0
+openai==1.73.0
