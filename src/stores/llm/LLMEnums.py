@@ -20,7 +20,7 @@ class CoHereEnums(Enum):
     SYSTEM = "SYSTEM"
     USER = "USER"
     ASSISTANT = "CHATBOT"
-    DoCUMENT = "search_document"
+    DOCUMENT = "search_document"
     QUERY = "search_query"
 
 

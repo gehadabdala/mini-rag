@@ -1,10 +1,12 @@
 # Main Application (main.py) The entry point of the application where routers are included.
 from fastapi import FastAPI
-from routes import base, data
+from routes import base, data, nlp
 from motor.motor_asyncio import AsyncIOMotorClient
 from helpers.config import get_settings
 from contextlib import asynccontextmanager
 from stores.llm.LLMProviderFactory import LLMProviderFactory
+from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
+
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
@@ -18,14 +20,20 @@ from stores.llm.LLMProviderFactory import LLMProviderFactory
 app = FastAPI()
 
 
-async def startup_db_client():
+@app.on_event("startup")
+async def startup_span():
     settings = get_settings()
     # عشان نتواصل مع المونجو والداتا بيز بتاعنا
     # app بخرن فيها ال global variables عشان كله يشوف
     app.mongo_conn = AsyncIOMotorClient(settings.MONGODB_URI)
     app.db_client = app.mongo_conn[settings.MONGODB_DATABASE]
 
+    app.include_router(nlp.nlp_router)
+
     llm_provider_factory = LLMProviderFactory(settings)
+    vectordb_provider_factory = VectorDBProviderFactory(
+        settings
+    )  # بيكون بيها اللي انا محتاجه
 
     # generation client
     app.generation_client = llm_provider_factory.create(
@@ -42,13 +50,25 @@ async def startup_db_client():
         embedding_size=settings.EMBEDDING_MODEL_SIZE,
     )
 
+    # vector db client
+    app.vectordb_client = vectordb_provider_factory.create(
+        provider=settings.VECTOR_DB_BACKEND
+    )
 
-async def shutdown_db_client():
+    app.vectordb_client.connect()
+
+
+@app.on_event("shutdown")
+async def shutdown_span():
     app.mongo_conn.close()
+    app.vectordb_client.disconnect()
 
 
-app.router.lifespan.on_startup.append(startup_db_client)
-app.router.lifespan.on_shutdown.append(shutdown_db_client)
+# app.router.lifespan.on_startup.append(startup_span)
+# app.router.lifespan.on_shutdown.append(shutdown_span)
+
+app.on_event("startup")(startup_span)
+app.on_event("shutdown")(shutdown_span)
 
 app.include_router(base.base_router)
 app.include_router(data.data_router)

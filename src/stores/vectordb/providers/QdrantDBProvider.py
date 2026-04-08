@@ -2,6 +2,7 @@ from qdrant_client import QdrantClient, models
 from ..VectorDBInterface import VectorDBInterface
 from ..VectorDBEnums import DistanceMethodEnums
 import logging
+import uuid
 from typing import List
 
 
@@ -10,7 +11,7 @@ class QdrantDBProvider(VectorDBInterface):
     def __init__(self, db_path: str, distance_method: str):
         self.db_path = db_path
         self.client = None
-        self.distance_method = None
+        self.distance_method = distance_method or "Cosine"
 
         if distance_method == DistanceMethodEnums.COSINE.value:
             self.distance_method = models.Distance.COSINE
@@ -117,6 +118,7 @@ class QdrantDBProvider(VectorDBInterface):
 
             batch_records = [
                 models.Record(
+                    id=str(uuid.uuid4()),
                     vector=batch_vectors[x],
                     payload={"text": batch_texts[x], "metadata": batch_metadata[x]},
                 )
