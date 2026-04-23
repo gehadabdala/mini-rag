@@ -29,7 +29,7 @@ class AssetModel(BaseDataModel):
         result = await self.collection.insert_one(
             asset.dict(by_alias=True, exclude_unset=True)
         )
-        asset.id = result.inserted_id
+        asset.asset_id = result.inserted_id
         return asset
 
     async def get_all_project_assets(self, asset_project_id: str, asset_type: str):

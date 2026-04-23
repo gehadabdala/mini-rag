@@ -1,12 +1,17 @@
 # Main Application (main.py) The entry point of the application where routers are included.
 from fastapi import FastAPI
 from routes import base, data, nlp
-from motor.motor_asyncio import AsyncIOMotorClient
 from helpers.config import get_settings
 from contextlib import asynccontextmanager
 from stores.llm.LLMProviderFactory import LLMProviderFactory
 from stores.vectordb.VectorDBProviderFactory import VectorDBProviderFactory
 from stores.llm.templates.template_parser import TempleteParser
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    create_async_engine,
+)  # connecting to postgres with sqlalchemy
+from sqlalchemy.orm import sessionmaker
+
 
 # @asynccontextmanager
 # async def lifespan(app: FastAPI):
@@ -25,8 +30,13 @@ async def startup_span():
     settings = get_settings()
     # عشان نتواصل مع المونجو والداتا بيز بتاعنا
     # app بخرن فيها ال global variables عشان كله يشوف
-    app.mongo_conn = AsyncIOMotorClient(settings.MONGODB_URI)
-    app.db_client = app.mongo_conn[settings.MONGODB_DATABASE]
+    postgres_conn = f"postgresql+asyncpg://{settings.POSTGRES_USERNAME}:{settings.POSTGRES_PASSWORD}@{settings.POSTGRES_HOST}:{settings.POSTGRES_PORT}/{settings.POSTGRES_MAIN_DATABASE}"
+
+    app.db_engine = create_async_engine(postgres_conn, echo=True)
+
+    app.db_client = sessionmaker(
+        app.db_engine, expire_on_commit=False, class_=AsyncSession
+    )
 
     app.include_router(nlp.nlp_router)
 
@@ -65,7 +75,7 @@ async def startup_span():
 
 @app.on_event("shutdown")
 async def shutdown_span():
-    app.mongo_conn.close()
+    app.db_engine.dispose()
     app.vectordb_client.disconnect()
 
 
