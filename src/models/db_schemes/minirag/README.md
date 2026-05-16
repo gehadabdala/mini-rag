@@ -1,20 +1,20 @@
 ## Run Alembic Migrations
 
-### Configuration
+## Configration
 
 ```bash
 cp alembic.ini.example alembic.ini
 ```
 
-- Update the `alembic.ini` with your database credentials (`sqlalchemy.url`)
-  
-### (Optional) Create a new migration
+- update the `alembic.ini` with your database credentials (`sqlalchemy.url`)
+
+### optional create new migration
 
 ```bash
-alembic revision --autogenerate -m "Add ..."
+alembic revision --autogenerate -m "adding ..."
 ```
 
-### Upgrade the database
+### upgrade the database
 
 ```bash
 alembic upgrade head

@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
 from typing import List
-from models.db_schemes import RetrievedDocument
+from models.db_schemas import RetrivedDocument
+
 
 class VectorDBInterface(ABC):
+    # connect & disconnect to the vector database
 
     @abstractmethod
     def connect(self):
@@ -13,7 +15,7 @@ class VectorDBInterface(ABC):
         pass
 
     @abstractmethod
-    def is_collection_existed(self, collection_name: str) -> bool:
+    def is_collection_exists(self, collection_name: str) -> bool:
         pass
 
     @abstractmethod
@@ -25,28 +27,40 @@ class VectorDBInterface(ABC):
         pass
 
     @abstractmethod
+    def create_collection(
+        self, collection_name: str, embedding_size: int, do_reset: bool = False
+    ):
+        pass
+
+    @abstractmethod
     def delete_collection(self, collection_name: str):
         pass
 
     @abstractmethod
-    def create_collection(self, collection_name: str, 
-                                embedding_size: int,
-                                do_reset: bool = False):
+    def insert_one(
+        self,
+        collection_name: str,
+        text: str,
+        vector: list,
+        metadata: list = None,
+        record_id: str = None,
+    ):
         pass
 
     @abstractmethod
-    def insert_one(self, collection_name: str, text: str, vector: list,
-                         metadata: dict = None, 
-                         record_id: str = None):
+    def insert_many(
+        self,
+        collection_name: str,
+        texts: list,
+        vectors: list,
+        metadatas: list = None,
+        record_ids: list = None,
+        batch_size: int = 50,
+    ):
         pass
 
     @abstractmethod
-    def insert_many(self, collection_name: str, texts: list, 
-                          vectors: list, metadata: list = None, 
-                          record_ids: list = None, batch_size: int = 50):
+    def search_by_vector(
+        self, collection_name: str, vector: list, limit: int
+    ) -> List[RetrivedDocument]:  # ->limit:: the number of results returned
         pass
-
-    @abstractmethod
-    def search_by_vector(self, collection_name: str, vector: list, limit: int) -> List[RetrievedDocument]:
-        pass
-    

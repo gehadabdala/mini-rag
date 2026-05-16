@@ -1,4 +1,6 @@
+# بيكون معاه ال setting , project_id , و ال db_client عشان اوفر علي نفسي مديهوش لحد من عياله
 from helpers.config import get_settings, Settings
+
 
 class BaseDataModel:
 

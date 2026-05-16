@@ -1,10 +1,19 @@
+import os
+import sys
+
 from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-from schemes import SQLAlchemyBase
-
+from sqlalchemy import engine_from_config, pool
 from alembic import context
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.abspath(os.path.join(current_dir, "../../../../.."))
+sys.path.insert(0, root_dir)
+
+from src.models.db_schemes.minirag.schemes.minirag_base import SQLAlchemyBase
+from src.models.db_schemes.minirag.schemes.asset import Asset
+from src.models.db_schemes.minirag.schemes.datachunk import DataChunk
+from src.models.db_schemes.minirag.schemes.project import Project
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -65,9 +74,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

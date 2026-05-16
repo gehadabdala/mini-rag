@@ -1,15 +1,16 @@
+# هنحط في ال templates شكل ال docs واللغات اللي ممكن تتكتب بيها
 import os
 
-class TemplateParser:
 
-    def __init__(self, language: str=None, default_language='en'):
+class TempleteParser:
+
+    def __init__(self, language: str = None, default_language="en"):
         self.current_path = os.path.dirname(os.path.abspath(__file__))
         self.default_language = default_language
         self.language = None
 
         self.set_language(language)
 
-    
     def set_language(self, language: str):
         if not language:
             self.language = self.default_language
@@ -17,27 +18,35 @@ class TemplateParser:
         language_path = os.path.join(self.current_path, "locales", language)
         if os.path.exists(language_path):
             self.language = language
+
         else:
             self.language = self.default_language
 
-    def get(self, group: str, key: str, vars: dict={}):
+    def get(self, group: str, key: str, vars: dict = {}):
         if not group or not key:
             return None
-        
-        group_path = os.path.join(self.current_path, "locales", self.language, f"{group}.py" )
+
+        group_path = os.path.join(
+            self.current_path, "locales", self.language, f"{group}.py"
+        )
         targeted_language = self.language
         if not os.path.exists(group_path):
-            group_path = os.path.join(self.current_path, "locales", self.default_language, f"{group}.py" )
+            group_path = os.path.join(
+                self.current_path, "locales", self.default_language, f"{group}.py"
+            )
             targeted_language = self.default_language
-
         if not os.path.exists(group_path):
             return None
-        
+
         # import group module
-        module = __import__(f"stores.llm.templates.locales.{targeted_language}.{group}", fromlist=[group])
+        # use duck function
+        module = __import__(
+            f"stores.llm.templates.locales.{targeted_language}.{group}",
+            fromlist={group},
+        )
 
         if not module:
             return None
-        
+
         key_attribute = getattr(module, key)
         return key_attribute.substitute(vars)
